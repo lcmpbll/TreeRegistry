@@ -18,18 +18,19 @@ class Tree {
     Tree(const char* fileName);
     Tree(const Tree& aTree);
     ~Tree();
-    void Destroy();
 
     void Add(const Student& newStudent);
-    bool Retrieve(const char* program, Student** sList, int& matches) const;
+    bool Remove(const char* key, Student& aStudent);
+
+    //bool Retrieve(const char* program, Student** sList, int& matches) const;
     bool Edit(const char * key, int standing);
-    int Remove();
+    //int Remove();
+
     void DisplayAll() const;
     void Monitor() const;
     int GetSize() const {
       return size;
     }
-    void GrowTree();
     
     void LoadFromFile(const char* fileName);
     bool SaveToFile(const char* fileName) const;
@@ -40,15 +41,16 @@ class Tree {
         data = new Student(aStudent);
 	left = right = NULL;
       }
-      
       Node(const Node& aNode) {
         data = new Student(*(aNode.data));
-	if(aNode.next) {
+        left = right = NULL;
+	if(aNode.left) {
 	  left = new Node(*aNode.left);
-	  right = new Node(* aNode.right);
-	} else {
-	  left = right = NULL;
 	}
+	if(aNode.right) {
+	  right = new Node(* aNode.right);
+	} 
+
       }
       ~Node() {
         if(data) {
@@ -56,20 +58,38 @@ class Tree {
 	}
 	left = righ = NULL;
       }
+      bool Node::IsFull(){
+        if(left && right) return true;
+	return false;
+      }
       Student * data;
       Node * left;
       Node * right
     };
-    int currentCap;
     Node * root = NULL;
-    const static int INIT_CAP = 11;
     int size;
 
-    int CalculateIndex(const char* key, int cap = 0) const;
-    void Destroy(Node* head);
-    bool IsPrime(int num);
-    int NextCap(int nextCap);
+    // Call functions on all students
+    void ForAll(Node* root, void (*func)(Student& s)) const;
+    void ForAll(Node* root, bool (*func)(Student& s));
+    // Ordered displays
+    void DisplayPre(ostream& out, Node* curr) const;
+    void DisplayPost(ostream& out, Node* curr) const;
+    void DisplayInOrder(ostream& out, Node* curr) const;
+    // Add student recursively
+    void Add(Node*& currRoot, const Student& aStudent);
+    // Edit tree
+    void Copy(Node* src, Node *& dest);
+    // Removing nodes
+    bool Remove(Node*& currRoot, const char* key, Student& aStudent);
+    void Destroy(Node*& root);
+    void DeleteNode(Node*& target);
+    // Monitor effeciency
+    int BranchLength(Node* root) const;
+    int LongestBranch(Node* root) const;
 };
+
+
 
 #endif
     

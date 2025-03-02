@@ -175,8 +175,8 @@ bool Tree::SaveToFile(const char* fileName) const {
   ofstream outfile;
   
   outfile.open(fileName);
-  if(outfile.is_open() && root) {
-    SaveToFile(outfile, root);
+  if(outfile.is_open() && this->root) {
+    SaveToFile(outfile, this->root);
     outfile.close();
     return true;
   }
@@ -191,6 +191,7 @@ bool Tree::SaveToFile(const char* fileName) const {
 //return: none
 void Tree::SaveToFile(ostream& out, Node* currRoot) const {
   if(currRoot) {
+    //Preorder
     currRoot->data->Write(out);
     SaveToFile(out, currRoot->left);
     SaveToFile(out, currRoot->right);
@@ -202,90 +203,54 @@ void Tree::SaveToFile(ostream& out, Node* currRoot) const {
 //input: none
 //output: none
 //return: bool true if students found, false if not
-bool Tree::Retrieve(const char* program, Student** sList, int& matches) const {
-  Node* curr = NULL;
-  int index = 0;
-  matches = 0;
-
-  while(index < currentCap) {
-    curr = aTree[index];
-    while(curr) {
-      if(curr->data && curr->data->IsInProgram(program)) {
-        sList[matches] = curr->data;
-        matches ++;
-      }
-      curr = curr->next;
-    }
-    index ++;
-  }
-  if(matches > 0) {
-    return true;
-  } else {
-    return false;
-  }
+bool Tree::Retrieve(const char* key, Student& student) const {
+  char temp[G_CHAR];
+  return Retrieve(key, root, student); 
 }
 
-//Name: Edit()
-//Desc: Edits the standing of the student that matches the key
-//input: none
-//output: none
-//return: bool true if matching student found and stading incremented
-bool Tree::Edit(const char* key, int standing) {
-  Node* curr = NULL;
-  int index = CalculateIndex(key);
-  char* name = new char[M_CHAR];
-
-  curr = aTree[index];
-  do {
-    if(curr) {
-      curr->data->GetName(name);
-      if(strcmp(name, key) == 0) {
-        curr->data->SetStanding(standing);
-	delete [] name;
-	name = NULL;
-	return true;
-      } else {
-	curr = curr->next;
-      }
-   }
-  } while (curr);
-  delete[] name; 
-  name = NULL;
+bool Tree::Retrieve (const char* key, Node* currRoot, Student& student) const {
+  char temp[G_CHAR];
+	
+  if(currRoot) {
+    int comp = strcmp(key, temp);
+    if(comp == 0) {
+      student = currRoot->data;
+      return true;
+    } else if(comp < 0) {
+      Retrieve(key, currRoot->left, student);
+    } else {
+      Retrieve(key, currRoot->right, student);
+    }
+  }
   return false;
-} 
+}
 
-//Name: Remove()
+//Name: RemoveProgram()
 //Desc: Removes students from the list if they are in poor standing.
 //input: none
 //output: none
 //return: int the number of students removed
-int Tree::Remove() {
-  int removed = 0, index = 0;
-  Node* curr = NULL, * prev;
-
-  while(index < currentCap) {
-    curr = aTree[index];
-    prev = NULL;
-    while(curr) {
-      if(curr->data->IsPoorPerformer()) {
-	Node* remove = curr;
-	curr = curr->next;
-        if(prev) {	 
-          prev->next = curr;
-	} else {
-	  aTree[index] = curr;
-	}
-          delete remove;
-	  removed ++;
-	  size --;
-      } else {
-	prev = curr;
-	curr = curr->next;
-      }
-    }
-    index ++;
-  }
+int Tree::RemoveProgram(const * key) {
+  int removed = 0;
+  RemoveIf(root, root->data->IsInProgram(key), removed);
   return removed;
+}
+
+//Name: RemoveIf() 
+//Desc: Removes students recursively from list if they match the parameters
+//input: none
+//output: none
+//return: int number of students removed
+void Tree::RemoveIf(Node* currRoot, bool *(func)(const char* key), int& removed) {
+  if(currRoot) {
+    RemoveIf(currRoot->left, func(key), removed);
+    RemoveIf(currRoot->right, func(key), removed);
+    if(currRoot.func(key)) {
+      DeleteNode(currRoot);
+      size --;
+      removed ++;  
+    } 
+  }
 }
 
 

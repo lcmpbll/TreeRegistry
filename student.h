@@ -19,6 +19,7 @@ class Student {
     // Friend output function
     const Student& operator= (const Student& anStudent);
     friend ostream& operator<<(ostream& os, const Student& anStudent);
+    const Student& operator > (const Student& aStudent);
     // Getters
     void GetName(char* name) const;
     void GetProgram(char* program) const;

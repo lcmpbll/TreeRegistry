@@ -39,23 +39,10 @@ Tree::Tree(const char* fileName) {
 //output: none
 //return: Tree
 Tree::Tree(const Tree& bTree ) {
-  if(this->aTree) {
-    delete [] this->aTree;
-  }
-  this->currentCap = bTree.currentCap;
-  this->aTree = new Node* [currentCap];
-
-  int index = 0;
-  //Iterate through aTree
-  while(index < bTree.currentCap) {
-    Node* curr = bTree.aTree[index];
-    while(curr) {
-      Add(*(curr->data));
-      curr=curr->next;
-    }
-    index ++;
-  }
-  
+  if(root) {
+    Destroy(root);
+  } 
+  *this = bTree;
 }
 
 // Name: Destructor
@@ -64,15 +51,7 @@ Tree::Tree(const Tree& bTree ) {
 // output: none
 // return: none
 Tree::~Tree() {
-  if(!aTree) return;
-  for(int i = 0; i < currentCap; i ++) {
-    if(aTree[i]) {
-      Destroy(aTree[i]);
-      aTree[i] = NULL;
-    }
-  }
-  delete [] aTree;
-  aTree = NULL;
+  Destroy(root);
 }
 
 //Name: Destroy()
@@ -80,12 +59,13 @@ Tree::~Tree() {
 //input: none
 //output: none
 //return: none
-void Tree::Destroy(Node* head) {
-  if(head) {
-    if(head->next) {
-      Destroy(head->next);
-    }
-    delete head;
+void Tree::Destroy(Node*& currRoot) {
+  if(currRoot) {
+    Destroy(currRoot->left);
+    Destroy(currRoot->right);
+    delete currRoot->data;
+    delete currRoot;
+    currRoot = NULL;
   }
 }
 

@@ -219,6 +219,17 @@ ostream& operator<<(ostream& os, const Student& anStudent){
   return os;
 }
 
+//Name operator overload > 
+//Desc: overloads the > operator to compare students
+//input: none
+//output: none
+//return: bool true if gNum > than aStudent.gNum
+Student operator>(Student& aStudent) {
+  char tNum[G_CHAR];
+  aStudent.GetGNumber(tNum);
+  return strcmp(gNum, tNum) > 0;
+}
+
 //Name: PrintHeaders()
 //Desc: Prints column headers
 //input: none

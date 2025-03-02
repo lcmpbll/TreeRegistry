@@ -72,10 +72,9 @@ class Tree {
     // Call functions on all students
     void ForAll(Node* root, void (*func)(Student& s)) const;
     void ForAll(Node* root, bool (*func)(Student& s));
-    // Ordered displays
-    void DisplayPre(ostream& out, Node* curr) const;
-    void DisplayPost(ostream& out, Node* curr) const;
+    // Ordered display/write
     void DisplayInOrder(ostream& out, Node* curr) const;
+    void SaveToFile(ostreaam& out, Node* currRoot) const;
     // Add student recursively
     void Add(Node*& currRoot, const Student& aStudent);
     // Edit tree

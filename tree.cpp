@@ -114,6 +114,19 @@ const Table& Table::operator(const Table& srcT) {
   return *this;
 }
 
+//Name: Copy()
+//Desc: Copies a source node and sub tree to destination tree
+//input: none
+//output: none
+//return: none
+void Table::Copy(Node* srcN, Node*& destN) {
+  if(srcN) {
+    destN = new Node(*(srcN->data));
+    Copy(srcN->left, destN->left);
+    Copy(srcN->right, destN->right);
+  }
+}
+
 
 //Name: LoadFromFile() 
 //Desc: Loads student data from a file.

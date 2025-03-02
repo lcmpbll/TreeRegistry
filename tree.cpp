@@ -95,6 +95,26 @@ void Tree::Add(Node*& currRoot, const Student& newStudent) {
   
 } 
 
+//Name: = operator override
+//Desc: Overrides the = operator to set one table equal to another
+//input: none
+//output: none
+//return: this
+const Table& Table::operator(const Table& srcT) {
+  if(this == &srcT) {
+    return *this;
+  } 
+  
+  if(this->root) {
+    Destroy(this->root);
+  } 
+  
+  size = srcT.size;
+  copy(srcT.root, this->root);
+  return *this;
+}
+
+
 //Name: LoadFromFile() 
 //Desc: Loads student data from a file.
 //input: none
@@ -130,7 +150,7 @@ void Tree::LoadFromFile(const char* fileName) {
     } 
   }
 }
-
+ /* WIP */
 //Name: SaveToFile()
 //Desc: Saves data to file
 //input: none
@@ -256,19 +276,8 @@ int Tree::Remove() {
 //output: table stats
 //return: none
 void Tree::Monitor() const {
-  int index = 0, count = 0;
-  Node* curr = NULL;
+  
 
-  while(index < currentCap) {
-    curr = aTree[index];
-    count = 0;
-    while(curr) {
-       count ++;  
-       curr = curr->next;
-    } 
-      cout << index << ": " << count << endl;
-      index ++; 
-  }
 }
 
 //Name: DisplayAll()
@@ -280,7 +289,7 @@ void Tree::DisplayAll() const {
   int index = 0, count = 1;
   Node* curr = NULL;
   
-  cout << "Display Tree: " << endl;
+  cout << "Display Registry: " << endl;
   while(index < currentCap) {
    curr = aTree[index];
    while(curr) {
@@ -300,46 +309,3 @@ void Tree::DisplayAll() const {
   
 }
     
-//Name: CalculateIndex()
-//Desc: Calculates the index for the table based on the key
-//input: none
-//output: none
-//return: int index;
-int Tree::CalculateIndex(const char* key, int cap) const {
-  if(cap == 0) cap = currentCap;
-  int index = 0;
-  int hashResult = 0;
-  for(; *key != '\0'; key++) {
-    hashResult += *key + index;
-    index ++;
-  }
-  return hashResult % cap;
-}
-
-//Name: IsPrime()
-//Desc: Returns true if the number is prime
-//input: none
-//output: none
-//return: bool, true if prime false if not
-bool Tree::IsPrime(const int num) {
-  if(num < 2) return false;
-  if(num == 2 || num == 3) return true;
-  if(num % 2 == 0 || num % 3 == 0) return false;
-
-  for(int i = 5; i * i <= num; i += 6) {
-    if(num % i == 0 || num % (i + 2) == 0) return false;
-  }
-  return true;
-}
-
-//Name: NextCap()
-//Desc: Finds the next prime number to be the Cap
-//input: none
-//output: none
-//return: int nextCap
-int Tree::NextCap(int nextCap) {
-  if(!IsPrime(nextCap)) {
-   NextCap(nextCap += 2);
-  }
-  return nextCap;
-}

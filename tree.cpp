@@ -28,8 +28,7 @@ Tree::Tree() {
 //output: none
 //return: Tree
 Tree::Tree(const char* fileName) {
-
-
+  Tree();
   LoadFromFile(fileName);
 }
 

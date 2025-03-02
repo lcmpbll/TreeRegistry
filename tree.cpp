@@ -165,7 +165,7 @@ void Tree::LoadFromFile(const char* fileName) {
     } 
   }
 }
- /* WIP */
+ 
 //Name: SaveToFile()
 //Desc: Saves data to file
 //input: none
@@ -173,24 +173,28 @@ void Tree::LoadFromFile(const char* fileName) {
 //return: bool, true if successful, false if not.
 bool Tree::SaveToFile(const char* fileName) const {
   ofstream outfile;
-  int index = 0;
-  Node* curr = NULL;
   
   outfile.open(fileName);
-  if(outfile.is_open()) {
-    while(index < currentCap) {
-      curr = aTree[index];
-      while(curr) {
-        curr->data->Write(outfile);
-	curr = curr->next;
-      }
-      index ++;
-    }
+  if(outfile.is_open() && root) {
+    SaveToFile(outfile, root);
     outfile.close();
     return true;
   }
 
   return false;
+}
+
+//Name: SaveToFile()
+//Desc: Recursively Writes each object the file.
+//input: none
+//output: student data to file
+//return: none
+void Tree::SaveToFile(ostream& out, Node* currRoot) const {
+  if(currRoot) {
+    currRoot->data->Write(out);
+    SaveToFile(out, currRoot->left);
+    SaveToFile(out, currRoot->right);
+  }
 }
 	  
 //Name: Retrieve()
@@ -300,27 +304,26 @@ void Tree::Monitor() const {
 //input: none
 //output: All Students
 //return: none
-void Tree::DisplayAll() const {
-  int index = 0, count = 1;
-  Node* curr = NULL;
-  
-  cout << "Display Registry: " << endl;
-  while(index < currentCap) {
-   curr = aTree[index];
-   while(curr) {
-      if(count == 1) {
-	 curr->data->PrintHeaders();
-      }
-     
-      cout << count << ". ";
-      cout << *(curr->data);
-      count ++;
-
-      curr = curr->next;
-    }
-    index ++;
+void Tree::DisplayAll(ostream& out, Node* currRoot) const {
+  if(!currRoot) {
+    out << "No Students registered." << endl;
+    return;
   }
-  cout << endl;
-  
+  currRoot->data->PrintHeaders();
+  DisplayInOrder(out, currRoot);
 }
     
+//Name: DisplayInOrder()
+//Desc: Displays the student information in order
+//input: none
+//output: none
+//return: none
+void Tree::DisplayInOrder(ostream& out, Node* currRoot) {
+  if(currRoot) {
+    DisplayinOrder(out, currRoot->left);
+    out << *(currRoot->data) endl;
+    DisplayInOrder(out, currRoot->right);
+  }
+}
+
+

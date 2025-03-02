@@ -124,6 +124,8 @@ void Table::Copy(Node* srcN, Node*& destN) {
     destN = new Node(*(srcN->data));
     Copy(srcN->left, destN->left);
     Copy(srcN->right, destN->right);
+  } else {
+    destN = NULL;
   }
 }
 

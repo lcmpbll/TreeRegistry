@@ -1,9 +1,9 @@
 //File Name: tree.cpp
 //Author: Liam Campbell
-//Date 2/17/2025
+//Date 2/28/ 2025
 //Desc: Define Tree ADT functions
 //Class: CS260
-//Assignment: project 3
+//Assignment: project 4
 
 
 #include "tree.h"
@@ -66,76 +66,34 @@ void Tree::Destroy(Node*& currRoot) {
     delete currRoot;
     currRoot = NULL;
   }
+  // Base case do nothing}
 }
 
 //Name: Add()
-//Desc: Places a new student in the table
+//Desc: Passes new student to recursive add increments size.
 //input: none
 //output: none
 //return: none
 void Tree::Add(const Student& newStudent) {
-  Node* newNode = new Node(newStudent);
-  int index;
-  bool placed = false;
-  char* key = new char[M_CHAR];
-  
-  newStudent.GetName(key);
-  index = CalculateIndex(key);
-
-  if(aTree[index] == NULL) {
-    aTree[index] = newNode;
-  } else {
-    Node * curr = aTree[index];
-    while(curr && !placed) {
-      if(curr->next == NULL) {
-        curr->next = newNode;
-        placed = true;
-      } else {
-	curr = curr->next;
-      }
-    }
-  }
-  delete [] key;  
+  Add(this->root, newStudent);
   size ++;
-  if(size > (currentCap/3) * 4) {
-    GrowTree();
-  }
 }
 
-//Name: GrowTree()
-//Desc: Increases currentCap and opies table with new cap.
+//Name: Add()
+//Desc: Recursively Adds a student to the tree.
 //input: none
 //output: none
-//return: aTree
-void Tree::GrowTree() {
-  int newCap = NextCap(currentCap * 2 + 1); // increases capacity, by at least 2 to next prime number
-  Node** newTree = new Node*[newCap]; // allocates memory for new table
-  int index = 0; // keeps track of index
-  Node* curr = NULL, *next = NULL;  // holds current node
-  char * key = new char[M_CHAR]; // Temp char* for student name
-
-  for(int i =0; i < newCap; i ++) {
-    newTree[i] = NULL;
+//return: none
+void Tree::Add(Node*& currRoot, const Student& newStudent) {
+  if(!currRoot) {
+    currRoot = new Node(newStudent);
+  } else if(*(currRoot->data) > newStudent) {
+    Add(currRoot->left, newStudent);
+  } else {
+    Add(currRoot->right, newStudent);
   }
-
-  while(index < currentCap) {
-    curr = aTree[index];
-    while(curr) {
-      next = curr->next;
-      curr->data->GetName(key);	    
-      int newIndex = CalculateIndex(key, newCap);
-
-      curr->next = newTree[newIndex];
-      newTree[newIndex] = curr;
-      curr = next;
-    }
-    index ++;
-  }
-  delete[] aTree;
-  delete [] key;
-  aTree = newTree;
-  currentCap = newCap;
-}
+  
+} 
 
 //Name: LoadFromFile() 
 //Desc: Loads student data from a file.

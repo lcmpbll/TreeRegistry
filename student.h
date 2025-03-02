@@ -34,6 +34,7 @@ class Student {
     bool IncrementStanding();
     // Prints column headers
     void PrintHeaders() const;
+    void Print() const;
     bool IsInProgram(const char* program) const;
     bool IsAtStanding(int stand) const;
     bool IsPoorPerformer() const;

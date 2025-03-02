@@ -219,15 +219,24 @@ ostream& operator<<(ostream& os, const Student& anStudent){
   return os;
 }
 
-//Name operator overload > 
+//Name: operator overload > 
 //Desc: overloads the > operator to compare students
 //input: none
 //output: none
 //return: bool true if gNum > than aStudent.gNum
-Student operator>(Student& aStudent) {
+Student operator>(const Student& aStudent) {
   char tNum[G_CHAR];
   aStudent.GetGNumber(tNum);
   return strcmp(gNum, tNum) > 0;
+}
+
+//Name: Print()
+//Desc: Uses << operator override to print out student data
+//input: none
+//output; none
+//return; none
+void Student::Print() const {
+  cout << this;
 }
 
 //Name: PrintHeaders()

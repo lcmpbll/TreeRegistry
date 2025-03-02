@@ -1,45 +1,34 @@
-//File Name: table.cpp
+//File Name: tree.cpp
 //Author: Liam Campbell
 //Date 2/17/2025
-//Desc: Define Table ADT functions
+//Desc: Define Tree ADT functions
 //Class: CS260
 //Assignment: project 3
 
 
-#include "table.h"
+#include "tree.h"
 #include "student.h"
 #include <fstream>
 #include <cstring>
 using namespace std;
 
 //Name: Default Constructor
-//Desc: Creates a Table with default parameters
+//Desc: Creates a Tree with default parameters
 //input: none
 //output: none
-//return: Table
-Table::Table() {
-  currentCap = INIT_CAP;
-  Node ** aTable = new Node*[currentCap];
-  for(int i = 0; i < currentCap; i ++) {
-    aTable[i] = NULL;
-  }
-
+//return: Tree
+Tree::Tree() {
+  root = NULL;
   size = 0;
 }
 
 //Name: Constructor
-//Desc: Creates a Table loaded from file
+//Desc: Creates a Tree loaded from file
 //input: infile
 //output: none
-//return: Table
-Table::Table(const char* fileName) {
-  currentCap = INIT_CAP;
-  aTable = new Node*[currentCap];
-  for(int i = 0; i < currentCap; i ++) {
-    aTable[i] = NULL;
-  }
+//return: Tree
+Tree::Tree(const char* fileName) {
 
-  size = 0;
 
   LoadFromFile(fileName);
 }
@@ -48,18 +37,18 @@ Table::Table(const char* fileName) {
 //Desc: Creates a table that is a copy of the table
 //input: none
 //output: none
-//return: Table
-Table::Table(const Table& bTable ) {
-  if(this->aTable) {
-    delete [] this->aTable;
+//return: Tree
+Tree::Tree(const Tree& bTree ) {
+  if(this->aTree) {
+    delete [] this->aTree;
   }
-  this->currentCap = bTable.currentCap;
-  this->aTable = new Node* [currentCap];
+  this->currentCap = bTree.currentCap;
+  this->aTree = new Node* [currentCap];
 
   int index = 0;
-  //Iterate through aTable
-  while(index < bTable.currentCap) {
-    Node* curr = bTable.aTable[index];
+  //Iterate through aTree
+  while(index < bTree.currentCap) {
+    Node* curr = bTree.aTree[index];
     while(curr) {
       Add(*(curr->data));
       curr=curr->next;
@@ -74,16 +63,16 @@ Table::Table(const Table& bTable ) {
 // input: none
 // output: none
 // return: none
-Table::~Table() {
-  if(!aTable) return;
+Tree::~Tree() {
+  if(!aTree) return;
   for(int i = 0; i < currentCap; i ++) {
-    if(aTable[i]) {
-      Destroy(aTable[i]);
-      aTable[i] = NULL;
+    if(aTree[i]) {
+      Destroy(aTree[i]);
+      aTree[i] = NULL;
     }
   }
-  delete [] aTable;
-  aTable = NULL;
+  delete [] aTree;
+  aTree = NULL;
 }
 
 //Name: Destroy()
@@ -91,7 +80,7 @@ Table::~Table() {
 //input: none
 //output: none
 //return: none
-void Table::Destroy(Node* head) {
+void Tree::Destroy(Node* head) {
   if(head) {
     if(head->next) {
       Destroy(head->next);
@@ -105,7 +94,7 @@ void Table::Destroy(Node* head) {
 //input: none
 //output: none
 //return: none
-void Table::Add(const Student& newStudent) {
+void Tree::Add(const Student& newStudent) {
   Node* newNode = new Node(newStudent);
   int index;
   bool placed = false;
@@ -114,10 +103,10 @@ void Table::Add(const Student& newStudent) {
   newStudent.GetName(key);
   index = CalculateIndex(key);
 
-  if(aTable[index] == NULL) {
-    aTable[index] = newNode;
+  if(aTree[index] == NULL) {
+    aTree[index] = newNode;
   } else {
-    Node * curr = aTable[index];
+    Node * curr = aTree[index];
     while(curr && !placed) {
       if(curr->next == NULL) {
         curr->next = newNode;
@@ -130,42 +119,42 @@ void Table::Add(const Student& newStudent) {
   delete [] key;  
   size ++;
   if(size > (currentCap/3) * 4) {
-    GrowTable();
+    GrowTree();
   }
 }
 
-//Name: GrowTable()
+//Name: GrowTree()
 //Desc: Increases currentCap and opies table with new cap.
 //input: none
 //output: none
-//return: aTable
-void Table::GrowTable() {
+//return: aTree
+void Tree::GrowTree() {
   int newCap = NextCap(currentCap * 2 + 1); // increases capacity, by at least 2 to next prime number
-  Node** newTable = new Node*[newCap]; // allocates memory for new table
+  Node** newTree = new Node*[newCap]; // allocates memory for new table
   int index = 0; // keeps track of index
   Node* curr = NULL, *next = NULL;  // holds current node
   char * key = new char[M_CHAR]; // Temp char* for student name
 
   for(int i =0; i < newCap; i ++) {
-    newTable[i] = NULL;
+    newTree[i] = NULL;
   }
 
   while(index < currentCap) {
-    curr = aTable[index];
+    curr = aTree[index];
     while(curr) {
       next = curr->next;
       curr->data->GetName(key);	    
       int newIndex = CalculateIndex(key, newCap);
 
-      curr->next = newTable[newIndex];
-      newTable[newIndex] = curr;
+      curr->next = newTree[newIndex];
+      newTree[newIndex] = curr;
       curr = next;
     }
     index ++;
   }
-  delete[] aTable;
+  delete[] aTree;
   delete [] key;
-  aTable = newTable;
+  aTree = newTree;
   currentCap = newCap;
 }
 
@@ -174,7 +163,7 @@ void Table::GrowTable() {
 //input: none
 //output: none
 //return: none
-void Table::LoadFromFile(const char* fileName) {
+void Tree::LoadFromFile(const char* fileName) {
   Student aStudent; // acts as temp student to pass to table
   char name[M_CHAR], program[M_CHAR], gNum[M_CHAR];
   int standing = 0;  // student property
@@ -210,7 +199,7 @@ void Table::LoadFromFile(const char* fileName) {
 //input: none
 //output: student data to file
 //return: bool, true if successful, false if not.
-bool Table::SaveToFile(const char* fileName) const {
+bool Tree::SaveToFile(const char* fileName) const {
   ofstream outfile;
   int index = 0;
   Node* curr = NULL;
@@ -218,7 +207,7 @@ bool Table::SaveToFile(const char* fileName) const {
   outfile.open(fileName);
   if(outfile.is_open()) {
     while(index < currentCap) {
-      curr = aTable[index];
+      curr = aTree[index];
       while(curr) {
         curr->data->Write(outfile);
 	curr = curr->next;
@@ -237,13 +226,13 @@ bool Table::SaveToFile(const char* fileName) const {
 //input: none
 //output: none
 //return: bool true if students found, false if not
-bool Table::Retrieve(const char* program, Student** sList, int& matches) const {
+bool Tree::Retrieve(const char* program, Student** sList, int& matches) const {
   Node* curr = NULL;
   int index = 0;
   matches = 0;
 
   while(index < currentCap) {
-    curr = aTable[index];
+    curr = aTree[index];
     while(curr) {
       if(curr->data && curr->data->IsInProgram(program)) {
         sList[matches] = curr->data;
@@ -265,12 +254,12 @@ bool Table::Retrieve(const char* program, Student** sList, int& matches) const {
 //input: none
 //output: none
 //return: bool true if matching student found and stading incremented
-bool Table::Edit(const char* key, int standing) {
+bool Tree::Edit(const char* key, int standing) {
   Node* curr = NULL;
   int index = CalculateIndex(key);
   char* name = new char[M_CHAR];
 
-  curr = aTable[index];
+  curr = aTree[index];
   do {
     if(curr) {
       curr->data->GetName(name);
@@ -294,12 +283,12 @@ bool Table::Edit(const char* key, int standing) {
 //input: none
 //output: none
 //return: int the number of students removed
-int Table::Remove() {
+int Tree::Remove() {
   int removed = 0, index = 0;
   Node* curr = NULL, * prev;
 
   while(index < currentCap) {
-    curr = aTable[index];
+    curr = aTree[index];
     prev = NULL;
     while(curr) {
       if(curr->data->IsPoorPerformer()) {
@@ -308,7 +297,7 @@ int Table::Remove() {
         if(prev) {	 
           prev->next = curr;
 	} else {
-	  aTable[index] = curr;
+	  aTree[index] = curr;
 	}
           delete remove;
 	  removed ++;
@@ -329,12 +318,12 @@ int Table::Remove() {
 //input: none
 //output: table stats
 //return: none
-void Table::Monitor() const {
+void Tree::Monitor() const {
   int index = 0, count = 0;
   Node* curr = NULL;
 
   while(index < currentCap) {
-    curr = aTable[index];
+    curr = aTree[index];
     count = 0;
     while(curr) {
        count ++;  
@@ -350,13 +339,13 @@ void Table::Monitor() const {
 //input: none
 //output: All Students
 //return: none
-void Table::DisplayAll() const {
+void Tree::DisplayAll() const {
   int index = 0, count = 1;
   Node* curr = NULL;
   
-  cout << "Display Table: " << endl;
+  cout << "Display Tree: " << endl;
   while(index < currentCap) {
-   curr = aTable[index];
+   curr = aTree[index];
    while(curr) {
       if(count == 1) {
 	 curr->data->PrintHeaders();
@@ -379,7 +368,7 @@ void Table::DisplayAll() const {
 //input: none
 //output: none
 //return: int index;
-int Table::CalculateIndex(const char* key, int cap) const {
+int Tree::CalculateIndex(const char* key, int cap) const {
   if(cap == 0) cap = currentCap;
   int index = 0;
   int hashResult = 0;
@@ -395,7 +384,7 @@ int Table::CalculateIndex(const char* key, int cap) const {
 //input: none
 //output: none
 //return: bool, true if prime false if not
-bool Table::IsPrime(const int num) {
+bool Tree::IsPrime(const int num) {
   if(num < 2) return false;
   if(num == 2 || num == 3) return true;
   if(num % 2 == 0 || num % 3 == 0) return false;
@@ -411,7 +400,7 @@ bool Table::IsPrime(const int num) {
 //input: none
 //output: none
 //return: int nextCap
-int Table::NextCap(int nextCap) {
+int Tree::NextCap(int nextCap) {
   if(!IsPrime(nextCap)) {
    NextCap(nextCap += 2);
   }
